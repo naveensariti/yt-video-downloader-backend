@@ -56,12 +56,4 @@ async def download_video(link: str = Form(...), quality: str = Form(...)):
 async def read_root():
     return {"message": "Welcome to the YouTube Video Downloader API!"}
 
-from fastapi.staticfiles import StaticFiles
-
-app.mount("/static", StaticFiles(directory="path_to_static_files"), name="static")
-
-@app.get("/")
-async def serve_index():
-    return {"message": "You can access the frontend at /static/index.html"}
-
 
