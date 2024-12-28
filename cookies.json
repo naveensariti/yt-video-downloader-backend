@@ -1,0 +1,12 @@
+[
+  {
+    "name": "cookie_name",
+    "value": "cookie_value",
+    "domain": "youtube.com",
+    "path": "/",
+    "expires": 1620234102,
+    "secure": true,
+    "httpOnly": true,
+    "sameSite": "None"
+  }
+]
