@@ -48,9 +48,11 @@ async def download_video(link: str = Form(...), quality: str = Form(...)):
         )
 
     output_path = os.path.join(download_dir, "video.mp4")
+
     yt_dlp_opts = {
         "format": quality_formats[quality],
         "outtmpl": output_path,
+        "cookies": "cookies.json",  # Path to your exported cookies file
     }
 
     try:
