@@ -19,12 +19,12 @@ app.add_middleware(
 download_dir = os.path.join(os.getcwd(), "downloads")
 os.makedirs(download_dir, exist_ok=True)
 
-# Mount static files
+# Mount static files (for index.html)
 app.mount("/static", StaticFiles(directory="."), name="static")
 
 @app.get("/")
 async def root():
-    return FileResponse("index.html")
+    return FileResponse("index.html")  # Ensure index.html is served correctly
 
 @app.post("/download")
 async def download_video(link: str = Form(...), quality: str = Form(...)):
