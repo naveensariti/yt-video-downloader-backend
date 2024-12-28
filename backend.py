@@ -10,7 +10,7 @@ app = FastAPI()
 # Allow all origins for CORS during development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with specific domains for production, e.g., "http://localhost:3000"
+    allow_origins=["*"],  # Replace "*" with specific domains for production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,6 +50,7 @@ async def download_video(link: str = Form(...), quality: str = Form(...)):
     yt_dlp_opts = {
         "format": quality_formats[quality],
         "outtmpl": output_path,
+        "cookies": "path_to_your_cookies_file.json",  # Add your cookies file path here
     }
 
     try:
