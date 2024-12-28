@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import os
 import yt_dlp
 
-app = FastAPI() 
+app = FastAPI()
 
 # Allow all origins for CORS during development
 app.add_middleware(
@@ -16,6 +18,13 @@ app.add_middleware(
 
 download_dir = os.path.join(os.getcwd(), "downloads")
 os.makedirs(download_dir, exist_ok=True)
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="."), name="static")
+
+@app.get("/")
+async def root():
+    return FileResponse("index.html")
 
 @app.post("/download")
 async def download_video(link: str = Form(...), quality: str = Form(...)):
@@ -51,9 +60,3 @@ async def download_video(link: str = Form(...), quality: str = Form(...)):
         raise HTTPException(status_code=500, detail=f"Download error: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
-
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to the YouTube Video Downloader API!"}
-
-
