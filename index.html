@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            color: #f5f5f5;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            width: 360px;
+            box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #333333;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            color: #333;
+            background-color: #f0f0f0;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .spinner {
+            margin-top: 20px;
+            width: 35px;
+            height: 35px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4b6cb7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .video-preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        iframe {
+            width: 100%;
+            height: 200px;
+            border: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube Video Downloader</h1>
+    <form id="downloadForm">
+        <label for="link">Video URL:</label>
+        <input type="text" id="link" name="link" placeholder="Enter YouTube video URL" required>
+
+        <label for="quality">Select Quality:</label>
+        <select id="quality" name="quality" required>
+            <option value="low">Low (480p)</option>
+            <option value="medium">Medium (720p)</option>
+            <option value="high">High (1080p)</option>
+        </select>
+
+        <button type="submit">Download</button>
+        <div class="spinner" id="loadingSpinner"></div>
+    </form>
+
+    <div class="video-preview" id="videoPreview" style="display: none;">
+        <h2>Video Preview</h2>
+        <iframe id="videoFrame" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        const form = document.getElementById('downloadForm');
+        const linkInput = document.getElementById('link');
+        const spinner = document.getElementById('loadingSpinner');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoFrame = document.getElementById('videoFrame');
+
+        // Show video preview when the link is entered
+        linkInput.addEventListener('input', () => {
+            const videoUrl = linkInput.value;
+            const videoId = extractVideoId(videoUrl);
+
+            if (videoId) {
+                videoFrame.src = `https://www.youtube.com/embed/${videoId}`;
+                videoPreview.style.display = 'block';
+            } else {
+                videoFrame.src = '';
+                videoPreview.style.display = 'none';
+            }
+        });
+
+        // Extract video ID from YouTube link
+        function extractVideoId(url) {
+            const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)|youtu\.be\/([^?]+)/;
+            const match = url.match(regex);
+            return match ? match[1] || match[2] : null;
+        }
+
+        // Handle form submission
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            spinner.style.display = 'block'; // Show loading spinner
+
+            try {
+                const response = await fetch('http://localhost:8000/download', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(result.status);  // Show success message
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.detail}`);  // Show error message
+                }
+            } catch (error) {
+                console.error('Request failed:', error);
+                alert("An unexpected error occurred.");
+            } finally {
+                spinner.style.display = 'none'; // Hide loading spinner
+            }
+        });
+    </script>
+</body>
+</html>
