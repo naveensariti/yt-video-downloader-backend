@@ -10,7 +10,7 @@ app = FastAPI()
 # Allow all origins for CORS during development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with specific domains for production
+    allow_origins=["*"],  # Replace "*" with specific domains for production, e.g., "http://localhost:3000"
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -19,12 +19,12 @@ app.add_middleware(
 download_dir = os.path.join(os.getcwd(), "downloads")
 os.makedirs(download_dir, exist_ok=True)
 
-# Mount static files (for index.html)
+# Mount static files
 app.mount("/static", StaticFiles(directory="."), name="static")
 
 @app.get("/")
 async def root():
-    return FileResponse("index.html")  # Ensure index.html is served correctly
+    return FileResponse("index.html")
 
 @app.post("/download")
 async def download_video(link: str = Form(...), quality: str = Form(...)):
