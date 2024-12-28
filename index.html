@@ -123,8 +123,7 @@
         const videoPreview = document.getElementById('videoPreview');
         const videoFrame = document.getElementById('videoFrame');
 
-        // Replace this with your actual deployed backend URL
-        const backendUrl = "https://yt-video-downloader-backend-hnq9.onrender.com/download"; 
+        const backendUrl = "https://yt-video-downloader-backend-ywwu.onrender.com/download"; // Correct URL for your backend
 
         // Show video preview when the link is entered
         linkInput.addEventListener('input', () => {
@@ -155,16 +154,18 @@
 
             try {
                 const response = await fetch(backendUrl, {
-                    method: 'POST', // Ensure it's POST
+                    method: 'POST',
                     body: formData,
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(result.status);  // Show success message
+                } else {
+                    const error = await response.json();
+                    console.error('Error response:', error); // Log full error
+                    alert(`Error: ${error.detail || 'Unknown error'}`);
                 }
-
-                const result = await response.json();
-                alert(result.status);  // Show success message
             } catch (error) {
                 console.error('Request failed:', error);
                 alert(`An unexpected error occurred: ${error.message}`);
