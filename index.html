@@ -123,7 +123,7 @@
         const videoPreview = document.getElementById('videoPreview');
         const videoFrame = document.getElementById('videoFrame');
 
-        const backendUrl = "/download"; // Adjust if the backend path changes
+        const backendUrl = "https://<your-render-backend-url>/download"; // Update this with your backend URL
 
         // Show video preview when the link is entered
         linkInput.addEventListener('input', () => {
@@ -163,11 +163,12 @@
                     alert(result.status);  // Show success message
                 } else {
                     const error = await response.json();
-                    alert(`Error: ${error.detail}`);  // Show error message
+                    console.error('Error response:', error); // Log full error
+                    alert(`Error: ${error.detail || 'Unknown error'}`);
                 }
             } catch (error) {
                 console.error('Request failed:', error);
-                alert("An unexpected error occurred.");
+                alert(`An unexpected error occurred: ${error.message}`);
             } finally {
                 spinner.style.display = 'none'; // Hide loading spinner
             }
