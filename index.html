@@ -123,6 +123,8 @@
         const videoPreview = document.getElementById('videoPreview');
         const videoFrame = document.getElementById('videoFrame');
 
+        const backendUrl = "/download"; // Adjust if the backend path changes
+
         // Show video preview when the link is entered
         linkInput.addEventListener('input', () => {
             const videoUrl = linkInput.value;
@@ -151,7 +153,7 @@
             spinner.style.display = 'block'; // Show loading spinner
 
             try {
-                const response = await fetch('http://localhost:8000/download', {
+                const response = await fetch(backendUrl, {
                     method: 'POST',
                     body: formData,
                 });
