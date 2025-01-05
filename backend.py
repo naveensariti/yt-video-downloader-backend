@@ -10,22 +10,23 @@ app = FastAPI()
 # Allow all origins for CORS during development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development (adjust for production)
+    allow_origins=["*"],  # Adjust for production if needed
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Define the download directory
-download_dir = os.path.join(os.getcwd(), "downloads")
+# Define the download directory in a temporary path
+download_dir = "/tmp/downloads"
 os.makedirs(download_dir, exist_ok=True)
 
-# Mount static files (Optional, for serving any assets if required)
-app.mount("/static", StaticFiles(directory="."), name="static")
+# Mount static files (e.g., for index.html)
+app.mount("/static", StaticFiles(directory=os.path.join(os.getcwd(), "static")), name="static")
 
 @app.get("/")
 async def root():
-    return FileResponse("index.html")
+    # Ensure index.html exists in the "static" directory
+    return FileResponse(os.path.join(os.getcwd(), "static", "index.html"))
 
 @app.post("/download")
 async def download_video(link: str = Form(...), quality: str = Form(...)):
@@ -52,7 +53,7 @@ async def download_video(link: str = Form(...), quality: str = Form(...)):
     yt_dlp_opts = {
         "format": quality_formats[quality],
         "outtmpl": output_path,
-        "cookies": "cookies.json",  # Path to your exported cookies file
+        "cookies": os.path.join(os.getcwd(), "cookies.json"),  # Ensure cookies.json exists
     }
 
     try:
@@ -63,3 +64,9 @@ async def download_video(link: str = Form(...), quality: str = Form(...)):
         raise HTTPException(status_code=500, detail=f"Download error: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))  # Render uses the PORT environment variable
+    uvicorn.run(app, host="0.0.0.0", port=port)
